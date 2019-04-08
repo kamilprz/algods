@@ -15,6 +15,9 @@
  * This class implements the competition using Floyd-Warshall algorithm
  */
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 public class CompetitionFloydWarshall {
 
     /**
@@ -22,12 +25,12 @@ public class CompetitionFloydWarshall {
      * @param sA, sB, sC: speeds for 3 contestants
      */
 
-    private static final double INFINITY = Integer.MAX_VALUE;
+    private static final double INFINITY = Integer.MAX_VALUE / 3;   // to prevent overflow if you do INFINITY + INFINITY
 
     double grid[][];    // [from][to]
 
     int sA, sB, sC;
-    int numberOfIntersections, numberOfStreets;
+    int numberOfIntersections, numberOfStreets;     // intersections = vertices, streets = edges
     int slowest;
 
     String filename;
@@ -39,8 +42,46 @@ public class CompetitionFloydWarshall {
         this.sA = sA;
         this.sB = sB;
         this.sC = sC;
+        this.initArray();
     }
 
+    // initialise the array
+    private void initArray(){
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+            numberOfIntersections = Integer.parseInt(br.readLine());
+            numberOfStreets = Integer.parseInt(br.readLine());
+            if(numberOfIntersections == 0 || numberOfStreets == 0 ){
+                validFile = false;
+            }
+            else{
+                grid = new double[numberOfIntersections][numberOfStreets];
+                for (int i = 0; i < numberOfIntersections; i++){
+                    for (int j = 0; j < numberOfIntersections; j++){
+                        grid[i][j] = INFINITY;
+                    }
+                }
+                String line = br.readLine();
+                while((line != null)){
+                    String[] lSplit = line.split(" ");
+                    grid[Integer.parseInt(lSplit[0])][Integer.parseInt(lSplit[1])] = Double.parseDouble(lSplit[2]);
+                    line = br.readLine();
+                }
+                br.close();
+            }
+        }catch (Exception e){
+            validFile = false;
+        }
+        if (sA < sB && sA < sC){
+            slowest = sA;
+        }
+        else if (sB < sA && sB < sC){
+            slowest = sB;
+        }
+        else{
+            slowest = sC;
+        }
+    }
 
     /**
      * @return int: minimum minutes that will pass before the three contestants can meet
@@ -68,6 +109,9 @@ public class CompetitionFloydWarshall {
             return -1;
         }
         max = max * 1000;   //convert to meters
+
+        // minimum number of minutes that will pass before the three contestants can meet
+        // longest path with slowest speed
         return (int) Math.ceil(max / slowest);
     }
 
