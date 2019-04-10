@@ -1,3 +1,6 @@
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 /*
  * A Contest to Meet (ACM) is a reality TV contest that sets three contestants at three random
  * city intersections. In order to win, the three contestants need all to meet at any intersection
@@ -15,8 +18,6 @@
  * This class implements the competition using Floyd-Warshall algorithm
  */
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 
 public class CompetitionFloydWarshall {
 
@@ -25,7 +26,7 @@ public class CompetitionFloydWarshall {
      * @param sA, sB, sC: speeds for 3 contestants
      */
 
-    private static final double INFINITY = Integer.MAX_VALUE / 3;   // to prevent overflow if you do INFINITY + INFINITY
+    private static final double INFINITY = Integer.MAX_VALUE / 2;   // to prevent overflow if you do INFINITY + INFINITY
 
     double grid[][];    // [from][to]
 
@@ -47,12 +48,19 @@ public class CompetitionFloydWarshall {
 
     // initialise the array
     private void initArray(){
+        slowest = Math.min(sA, sB);
+        slowest = Math.min(slowest, sC);
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
             numberOfIntersections = Integer.parseInt(br.readLine());
             numberOfStreets = Integer.parseInt(br.readLine());
             if(numberOfIntersections == 0 || numberOfStreets == 0 ){
                 validFile = false;
+            }
+            if(filename == null){
+                validFile = false;
+                slowest = -1;
             }
             else{
                 grid = new double[numberOfIntersections][numberOfStreets];
@@ -63,7 +71,7 @@ public class CompetitionFloydWarshall {
                 }
                 String line = br.readLine();
                 while((line != null)){
-                    String[] lSplit = line.split(" ");
+                    String[] lSplit = line.trim().split(" ");
                     grid[Integer.parseInt(lSplit[0])][Integer.parseInt(lSplit[1])] = Double.parseDouble(lSplit[2]);
                     line = br.readLine();
                 }
@@ -71,15 +79,7 @@ public class CompetitionFloydWarshall {
             }
         }catch (Exception e){
             validFile = false;
-        }
-        if (sA < sB && sA < sC){
-            slowest = sA;
-        }
-        else if (sB < sA && sB < sC){
-            slowest = sB;
-        }
-        else{
-            slowest = sC;
+            slowest = -1;
         }
     }
 
@@ -104,27 +104,27 @@ public class CompetitionFloydWarshall {
                 }
             }
         }
-        double max = getMax();
-        if(max == INFINITY){
+        double maxDist = getMax();
+        if(maxDist == INFINITY){
             return -1;
         }
-        max = max * 1000;   //convert to meters
+        maxDist = maxDist * 1000;   //convert to meters
 
         // minimum number of minutes that will pass before the three contestants can meet
         // longest path with slowest speed
-        return (int) Math.ceil(max / slowest);
+        return (int) Math.ceil(maxDist / slowest);
     }
 
     private double getMax(){
-        double max = -1;
+        double maxDist = -1;
         for (int i = 0; i < numberOfIntersections; i++){
             for (int j = 0; j < numberOfIntersections; j++){
-                if(grid[i][j] > max && i != j){
-                    max = grid[i][j];
+                if(grid[i][j] > maxDist && i != j){
+                    maxDist = grid[i][j];
                 }
             }
         }
-        return max;
+        return maxDist;
     }
 
 }

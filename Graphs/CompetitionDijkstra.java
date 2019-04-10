@@ -1,3 +1,4 @@
+
 import java.io.FileInputStream;
 import java.util.*;
 
@@ -19,45 +20,61 @@ import java.util.*;
 
 class CompetitionDijkstra {
 
-    private int sMin;
+    int sA, sB, sC;
+    int slowest;
+
+    String filename;
+
     private TreeMap<Integer, Node> map;
 
     /**
      * @param filename: A filename containing the details of the city road network
-     * @param sA,       sB, sC: speeds for 3 contestants
+     * @param sA,sB,sC: speeds for 3 contestants
      */
     CompetitionDijkstra(String filename, int sA, int sB, int sC) {
+        this.filename = filename;
+        this.sA = sA;
+        this.sB = sB;
+        this.sC = sC;
+        this.initialise();
+    }
 
-        sMin = Math.min(sA, sB);
-        sMin = Math.min(sMin, sC);
-        if (filename == null) sMin = -1;
+    private void initialise() {
+
+        slowest = Math.min(sA, sB);
+        slowest = Math.min(slowest, sC);
+        if (filename == null) slowest = -1;
         map = new TreeMap<>();
 
+        // initialise the TreeMap and the adjacency lists of each node
         try {
             Scanner scanner = new Scanner(new FileInputStream(filename));
-            scanner.nextInt();
+            int V = scanner.nextInt();
             int S = scanner.nextInt();
+            for (int i = 0; i < S; i++) {
+                if (scanner.hasNext()) {
+                    int intersection1 = scanner.nextInt();
+                    int intersection2 = scanner.nextInt();
+                    double length = scanner.nextDouble() * 1000;
+                    Node node1, node2;
 
-            for (int i = 0; i < S && scanner.hasNext(); i++) {
-                int intersection1 = scanner.nextInt();
-                int intersection2 = scanner.nextInt();
-                double length = scanner.nextDouble() * 1000;
-                Node node1, node2;
+                    if (map.get(intersection1) == null) {
+                        node1 = new Node(intersection1);
+                        map.put(intersection1, node1);
+                    } else node1 = map.get(intersection1);
 
-                if (map.get(intersection1) == null) {
-                    node1 = new Node(intersection1);
-                    map.put(intersection1, node1);
-                } else node1 = map.get(intersection1);
+                    if (map.get(intersection2) == null) {
+                        node2 = new Node(intersection2);
+                        map.put(intersection2, node2);
+                    } else node2 = map.get(intersection2);
 
-                if (map.get(intersection2) == null) {
-                    node2 = new Node(intersection2);
-                    map.put(intersection2, node2);
-                } else node2 = map.get(intersection2);
-
-                node1.addAdjacent(node2, length);
+                    node1.addAdjacent(node2, length);
+                } else {
+                    break;
+                }
             }
-        } catch (Exception ignored) {
-            sMin = -1;
+        } catch (Exception e) {
+            slowest = -1;
         }
     }
 
@@ -94,19 +111,19 @@ class CompetitionDijkstra {
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition() {
-        if (map.size() == 0 || sMin <= 0) return -1;
+        if (map.size() == 0 || slowest <= 0) return -1;
         double maxDist = -1;
         for (Node node : map.values()) {
             double dist = getLowestCost(node.id);
             if (dist == Double.MAX_VALUE) return -1;
             maxDist = Math.max(maxDist, dist);
         }
-        return (int) Math.ceil(maxDist / sMin);
+        return (int) Math.ceil(maxDist / slowest);
     }
 
     private class Node {
         int id;
-        double cost = Double.MAX_VALUE;
+        double cost = Double.MAX_VALUE; //tentative cost
         ArrayList<Path> paths = new ArrayList<>();
 
         Node(int id) {
