@@ -30,6 +30,9 @@ public class CompetitionTests {
 
         CompetitionDijkstra dijkstra5 = new CompetitionDijkstra("input-J.txt", 98, 70, 84);
         assertEquals("Test competition with speeds fine?", -1, dijkstra5.timeRequiredforCompetition());
+
+        CompetitionDijkstra dijkstra6 = new CompetitionDijkstra("tinyEWD.txt", 5, 80, 60);
+        assertEquals("Test competition with less than 50 speed", -1, dijkstra6.timeRequiredforCompetition());
     }
 
 
@@ -59,6 +62,9 @@ public class CompetitionTests {
 
         CompetitionFloydWarshall floyWar5 = new CompetitionFloydWarshall("input-J.txt", 98, 70, 84);
         assertEquals("Smile", -1, floyWar5.timeRequiredforCompetition());
+
+        CompetitionFloydWarshall floyWar6 = new CompetitionFloydWarshall("tinyEWD.txt", 5, 80, 60);
+        assertEquals("Test competition with less than 50 speed", -1, floyWar6.timeRequiredforCompetition());
     }
 
     //TODO - more tests

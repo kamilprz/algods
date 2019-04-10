@@ -111,6 +111,10 @@ class CompetitionDijkstra {
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition() {
+        if((sA > 100 || sA < 50) || (sB > 100 || sB < 50) || (sC > 100 || sC < 50)){
+            return -1;
+        }
+
         if (map.size() == 0 || slowest <= 0) return -1;
         double maxDist = -1;
         for (Node node : map.values()) {
