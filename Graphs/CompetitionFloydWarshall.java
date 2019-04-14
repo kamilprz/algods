@@ -1,21 +1,21 @@
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-/*
+
+/**
  * A Contest to Meet (ACM) is a reality TV contest that sets three contestants at three random
  * city intersections. In order to win, the three contestants need all to meet at any intersection
  * of the city as fast as possible.
  * It should be clear that the contestants may arrive at the intersections at different times, in
  * which case, the first to arrive can wait until the others arrive.
  * From an estimated walking speed for each one of the three contestants, ACM wants to determine the
- * minimum time that a live TV broadcast should last to cover their journey regardless of the contestantsâ€™
+ * minimum time that a live TV broadcast should last to cover their journey regardless of the contestants’
  * initial positions and the intersection they finally meet. You are hired to help ACM answer this question.
  * You may assume the following:
- *    ï‚· Each contestant walks at a given estimated speed.
- *    ï‚· The city is a collection of intersections in which some pairs are connected by one-way
+ *  Each contestant walks at a given estimated speed.
+ *  The city is a collection of intersections in which some pairs are connected by one-way
  * streets that the contestants can use to traverse the city.
- *
- * This class implements the competition using Floyd-Warshall algorithm
+ * This class implements the competition using Dijkstra's algorithm
  */
 
 
@@ -26,7 +26,7 @@ public class CompetitionFloydWarshall {
      * @param sA, sB, sC: speeds for 3 contestants
      */
 
-    private static final double INFINITY = Integer.MAX_VALUE / 2;   // to prevent overflow if you do INFINITY + INFINITY
+    private static final double INFINITY = Integer.MAX_VALUE;   // to prevent overflow if you do INFINITY + INFINITY
 
     double grid[][];    // [from][to]
 
@@ -58,14 +58,13 @@ public class CompetitionFloydWarshall {
             if(numberOfIntersections == 0 || numberOfStreets == 0 ){
                 validFile = false;
             }
-            if(filename == null){
-                validFile = false;
-                slowest = -1;
-            }
             else{
                 grid = new double[numberOfIntersections][numberOfStreets];
                 for (int i = 0; i < numberOfIntersections; i++){
                     for (int j = 0; j < numberOfIntersections; j++){
+                        if(i == j ){
+                            grid[i][j] = 0;
+                        }
                         grid[i][j] = INFINITY;
                     }
                 }
@@ -105,9 +104,8 @@ public class CompetitionFloydWarshall {
             }
         }
         double maxDist = getMax();
-        if(maxDist == INFINITY){
-            return -1;
-        }
+        if (maxDist == INFINITY) return -1;
+
         maxDist = maxDist * 1000;   //convert to meters
 
         // minimum number of minutes that will pass before the three contestants can meet

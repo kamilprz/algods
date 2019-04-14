@@ -78,7 +78,7 @@ class CompetitionDijkstra {
         }
     }
 
-    private double getLowestCost(int start) {
+    private double getMaxCost(int start) {
 
         LinkedList<Node> nodes = new LinkedList<>();
         for (Node node : map.values()) {
@@ -118,7 +118,7 @@ class CompetitionDijkstra {
         if (map.size() == 0 || slowest <= 0) return -1;
         double maxDist = -1;
         for (Node node : map.values()) {
-            double dist = getLowestCost(node.id);
+            double dist = getMaxCost(node.id);
             if (dist == Double.MAX_VALUE) return -1;
             maxDist = Math.max(maxDist, dist);
         }
